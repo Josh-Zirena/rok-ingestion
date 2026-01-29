@@ -1,0 +1,162 @@
+Rok Ingestion & Leaderboard Backend (POC)
+
+This project implements the backend ingestion and query pipeline for a player analytics dashboard.
+
+The system is designed to be:
+
+S3-first (object storage as the source of truth)
+
+Event-driven
+
+Expandable (multi-kingdom, new metrics, future DB if needed)
+
+POC-friendly (minimal infrastructure, no auth, no database initially)
+
+What this system does
+
+You manually upload a CSV or JSON snapshot of player data.
+
+The system ingests the file and stores it as an immutable historical snapshot.
+
+A curated, query-optimized dataset is produced.
+
+A public API serves leaderboard data to a frontend.
+
+The most recent snapshot available is treated as the “current” state.
+
+Core concepts
+
+Snapshot-based
+
+Each upload represents the full state of players at a point in time.
+
+Data is append-only; nothing is overwritten.
+
+Stable identity
+
+id is the stable unique identifier for a player.
+
+id must be unique within a single file.
+
+id is expected to repeat across weeks (this is intentional).
+
+Separation of concerns
+
+Ingestion builds the data lake.
+
+Query/API serves the frontend.
+
+Frontend never talks directly to S3 or Athena.
+
+S3 key conventions
+
+These are logical conventions used by the system.
+
+Inbox (manual upload — the only human touchpoint)
+
+Example path:
+inbox/source=rok_players/kingdom=51/dt=2026-01-26/players.csv
+
+Raw (immutable, audit-safe snapshot)
+
+Example path:
+raw/source=rok_players/kingdom=51/dt=2026-01-26/run_ts=20260126T153012Z/players.csv
+
+Curated (query-ready, Parquet)
+
+Example path:
+curated/source=rok_players/kingdom=51/dt=2026-01-26/players.parquet
+
+Backend components
+Ingestion service (ingest_players)
+
+Triggered automatically when a file is uploaded to the inbox path.
+
+Responsibilities:
+
+Parse S3 key to determine kingdom and snapshot date
+
+Validate schema and enforce unique id within the file
+
+Normalize data types and column names
+
+Add metadata (kingdom, snapshot_date, ingested_at, run_id, record_hash)
+
+Write immutable raw snapshot
+
+Write curated Parquet snapshot
+
+This service is stateless and idempotent.
+
+API service (leaderboard-api)
+
+Invoked via API Gateway and used by the public frontend.
+
+Responsibilities:
+
+Validate incoming requests
+
+Resolve “latest” snapshot for a kingdom
+
+Query Athena for leaderboard results
+
+Return UI-friendly JSON responses
+
+Athena is used as the initial query engine and can be swapped later.
+
+Query behavior
+
+The “current” snapshot is defined as the latest snapshot date available for a given kingdom.
+
+Leaderboards supported:
+
+Top 100 DKP
+
+Top 100 Kills
+
+Top 100 Deaths
+
+Queries are partitioned by kingdom and snapshot date.
+
+Development approach
+
+This project is built incrementally.
+
+Step 1
+Project structure, module layout, local runner, and test scaffolding.
+
+Step 2
+S3 key parsing and output key construction.
+
+Step 3
+Local ingestion logic:
+
+CSV/JSON reading
+
+Validation
+
+Parquet writing
+
+Later steps may add:
+
+Change diffs
+
+Precomputed leaderboards
+
+Multi-kingdom support
+
+Optional database materialization
+
+Design philosophy
+
+S3 is the source of truth
+
+Lambdas are stateless
+
+Athena is used only where it makes sense
+
+Everything is designed to be replaceable, not rewritten
+
+Status
+
+This is an intentionally incremental POC designed to evolve into a production-grade system without architectural rewrites.

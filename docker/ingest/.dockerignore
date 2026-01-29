@@ -1,0 +1,56 @@
+# Exclude Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Exclude virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Exclude test files
+tests/
+*.test.py
+test_*.py
+
+# Exclude local data and output directories
+data/
+local_out/
+inbox/
+
+# Exclude infrastructure and deployment files
+infra/
+docker/
+scripts/
+
+# Exclude git and version control
+.git/
+.gitignore
+.gitattributes
+
+# Exclude documentation and README files
+*.md
+*.rst
+docs/
+
+# Exclude IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Exclude egg-info directories (generated during install)
+*.egg-info/
+
+# Exclude Terraform files
+*.tf
+*.tfstate
+*.tfstate.backup
+
+# Exclude Docker files
+Dockerfile
+.dockerignore
