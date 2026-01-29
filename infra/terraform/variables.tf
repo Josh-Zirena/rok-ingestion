@@ -37,5 +37,5 @@ variable "source_repo_url" {
 variable "source_repo_branch" {
   description = "Git branch for CodeBuild to build from"
   type        = string
-  default     = "main"
+  default     = "master"
 }
