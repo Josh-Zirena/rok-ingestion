@@ -355,12 +355,7 @@ resource "aws_codebuild_project" "ingest_image" {
     }
   }
 
-  dynamic "source_version" {
-    for_each = var.source_repo_url != "" ? [1] : []
-    content {
-      source_version = var.source_repo_branch
-    }
-  }
+  source_version = var.source_repo_url != "" ? var.source_repo_branch : null
 
   tags = {
     Project = var.project_name
