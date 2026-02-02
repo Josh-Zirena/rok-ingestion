@@ -255,7 +255,8 @@ resource "aws_iam_policy" "codebuild_ecr" {
           "ecr:PutImage",
           "ecr:InitiateLayerUpload",
           "ecr:UploadLayerPart",
-          "ecr:CompleteLayerUpload"
+          "ecr:CompleteLayerUpload",
+          "ecr:DescribeImages"
         ]
         Resource = aws_ecr_repository.ingest.arn
       }
@@ -343,7 +344,7 @@ resource "aws_codebuild_project" "ingest_image" {
   source {
     type      = var.source_repo_url != "" ? "GITHUB" : "NO_SOURCE"
     location  = var.source_repo_url != "" ? var.source_repo_url : null
-    buildspec = file("${path.module}/../../buildspec.yml")
+    buildspec = var.source_repo_url == "" ? file("${path.module}/../../buildspec.yml") : null
     
     git_clone_depth = 1
     
