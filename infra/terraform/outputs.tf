@@ -18,9 +18,9 @@ output "ingest_lambda_name" {
   value       = var.ingest_lambda_name
 }
 
-output "ingest_lambda_created" {
-  description = "Whether the ingestion Lambda was created"
-  value       = local.create_ingest_lambda
+output "ingest_lambda_arn" {
+  description = "ARN of the ingestion Lambda function"
+  value       = aws_lambda_function.ingest.arn
 }
 
 output "codebuild_project_name" {
@@ -31,4 +31,39 @@ output "codebuild_project_name" {
 output "codebuild_project_arn" {
   description = "ARN of the CodeBuild project"
   value       = aws_codebuild_project.ingest_image.arn
+}
+
+output "leaderboard_api_url" {
+  description = "URL of the leaderboard API endpoint"
+  value       = aws_apigatewayv2_api.leaderboard_http.api_endpoint
+}
+
+output "leaderboard_api_id" {
+  description = "ID of the API Gateway HTTP API"
+  value       = aws_apigatewayv2_api.leaderboard_http.id
+}
+
+output "frontend_bucket_name" {
+  description = "Name of the S3 bucket hosting the frontend"
+  value       = aws_s3_bucket.frontend.bucket
+}
+
+output "frontend_bucket_website_endpoint" {
+  description = "Website endpoint for the S3 bucket"
+  value       = aws_s3_bucket_website_configuration.frontend.website_endpoint
+}
+
+output "cloudfront_distribution_id" {
+  description = "ID of the CloudFront distribution"
+  value       = aws_cloudfront_distribution.frontend.id
+}
+
+output "cloudfront_domain_name" {
+  description = "Domain name of the CloudFront distribution"
+  value       = aws_cloudfront_distribution.frontend.domain_name
+}
+
+output "frontend_url" {
+  description = "Full HTTPS URL for the frontend (CloudFront)"
+  value       = "https://${aws_cloudfront_distribution.frontend.domain_name}"
 }

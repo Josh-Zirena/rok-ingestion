@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project 51 Leaderboard | Player Rankings</title>
+  <meta name="description" content="View top players by power, killpoints, kills, and deaths in Project 51. Track kingdom performance and player rankings.">
+  <meta name="keywords" content="project 51, rise of kingdoms, rok, leaderboard, player stats, kingdom rankings">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>👑</text></svg>">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Project 51 Leaderboard">
+  <meta property="og:description" content="Track top Project 51 players by power, killpoints, and more">
+  <meta property="og:type" content="website">
+  
+  <!-- Theme color -->
+  <meta name="theme-color" content="#3b82f6">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Project 51 Leaderboard</h1>
+      <p class="tagline">Created By 51 Jack</p>
+    </header>
+    
+    <main>
+      <div class="controls">
+        <div id="kingdom-selector"></div>
+        <div id="metric-selector"></div>
+        <div id="date-selector"></div>
+        <div id="limit-input"></div>
+        <button id="load-btn">Load Leaderboard</button>
+      </div>
+      
+      <div id="status"></div>
+      
+      <div id="leaderboard-container">
+        <!-- Leaderboard table will be inserted here -->
+      </div>
+    </main>
+    
+    <footer>
+      <p>&copy; 2026 51 Jack. All rights reserved.</p>
+    </footer>
+  </div>
+  
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

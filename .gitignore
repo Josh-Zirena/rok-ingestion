@@ -12,5 +12,13 @@ local_out/
 infra/terraform/.terraform/
 infra/terraform/*.tfstate
 infra/terraform/*.tfstate.backup
-infra/terraform/.terraform.lock.hcl
+infra/terraform/dist/
+infra/terraform/tfplan
 data/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env.local
+frontend/.env.*.local

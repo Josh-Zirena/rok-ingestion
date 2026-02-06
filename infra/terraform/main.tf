@@ -5,7 +5,8 @@ provider "aws" {
 provider "random" {}
 
 locals {
-  create_ingest_lambda = var.ingest_image_uri != ""
+  # ECR image URI - update this when you push a new Docker image
+  ingest_image_uri = "152352519097.dkr.ecr.us-east-1.amazonaws.com/rok-ingestion-ingest:latest"
 }
 
 # Create a unique suffix for the bucket name
@@ -152,13 +153,11 @@ resource "aws_cloudwatch_log_group" "ingest_lambda" {
   }
 }
 
-# Lambda function (conditional - only created when image_uri is provided)
+# Lambda function for ingestion
 resource "aws_lambda_function" "ingest" {
-  count = local.create_ingest_lambda ? 1 : 0
-
   function_name = var.ingest_lambda_name
   package_type  = "Image"
-  image_uri     = var.ingest_image_uri
+  image_uri     = local.ingest_image_uri
   role          = aws_iam_role.ingest_lambda.arn
   timeout       = 60
   memory_size   = 1024
@@ -181,25 +180,21 @@ resource "aws_lambda_function" "ingest" {
   }
 }
 
-# Lambda permission for S3 to invoke (conditional)
+# Lambda permission for S3 to invoke
 resource "aws_lambda_permission" "allow_s3" {
-  count = local.create_ingest_lambda ? 1 : 0
-
   statement_id  = "AllowS3Invoke"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.ingest[0].function_name
+  function_name = aws_lambda_function.ingest.function_name
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.data_lake.arn
 }
 
-# S3 bucket notification to trigger Lambda (conditional)
+# S3 bucket notification to trigger Lambda
 resource "aws_s3_bucket_notification" "inbox_trigger" {
-  count = local.create_ingest_lambda ? 1 : 0
-
   bucket = aws_s3_bucket.data_lake.id
 
   lambda_function {
-    lambda_function_arn = aws_lambda_function.ingest[0].arn
+    lambda_function_arn = aws_lambda_function.ingest.arn
     events              = ["s3:ObjectCreated:*"]
     filter_prefix       = "inbox/"
   }
@@ -345,9 +340,9 @@ resource "aws_codebuild_project" "ingest_image" {
     type      = var.source_repo_url != "" ? "GITHUB" : "NO_SOURCE"
     location  = var.source_repo_url != "" ? var.source_repo_url : null
     buildspec = var.source_repo_url == "" ? file("${path.module}/../../buildspec.yml") : null
-    
+
     git_clone_depth = 1
-    
+
     dynamic "git_submodules_config" {
       for_each = var.source_repo_url != "" ? [1] : []
       content {
